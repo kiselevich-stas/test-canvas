@@ -1,73 +1,66 @@
-<template>
-  <div class="app-shell">
-    <aside class="left-sidebar">
-      <div class="app-brand panel">
-        <div class="eyebrow">Vue 3 + Cytoscape</div>
-        <h1>Интерактивный граф</h1>
-        <p>
-          Готовый стартовый проект на Vite. Есть pan, zoom, drag узлов, фильтры,
-          разные типы линий и цветовые индикаторы статуса.
-        </p>
-      </div>
-
-      <GraphToolbar
-        @zoom-in="graphCanvas?.zoomIn()"
-        @zoom-out="graphCanvas?.zoomOut()"
-        @fit="graphCanvas?.fitGraph()"
-        @reset="handleResetView"
-      />
-
-      <GraphFilters v-model="filters" @reset="resetFilters" />
-
-      <div class="panel stats-panel">
-        <div class="panel-title">Статистика</div>
-        <div class="stats-grid">
-          <div>
-            <div class="stats-number">{{ graph.nodes.length }}</div>
-            <div class="stats-label">узлов</div>
-          </div>
-          <div>
-            <div class="stats-number">{{ graph.edges.length }}</div>
-            <div class="stats-label">связей</div>
-          </div>
-        </div>
-      </div>
-    </aside>
-
-    <main class="main-area">
-      <GraphCanvas ref="graphCanvas" :graph="graph" :filters="filters" />
-    </main>
-  </div>
-</template>
-
 <script setup>
 import { ref } from 'vue'
 import GraphCanvas from './components/GraphCanvas.vue'
-import GraphFilters from './components/GraphFilters.vue'
-import GraphToolbar from './components/GraphToolbar.vue'
 import { sampleGraph } from './data/sampleGraph'
 
-const graph = sampleGraph
 const graphCanvas = ref(null)
+const graph = sampleGraph
 
-const defaultFilters = () => ({
-  search: '',
-  types: ['hub', 'processor', 'merchant'],
-  statuses: ['active', 'warning', 'danger'],
-  edgeTypes: ['hub', 'direct', 'dashed'],
-  hideIsolated: false,
+const stats = ref({
+  nodes: graph.nodes.length,
+  edges: graph.edges.length,
 })
 
-const filters = ref(defaultFilters())
-
-function resetFilters() {
-  filters.value = defaultFilters()
-}
-
-function handleResetView() {
-  resetFilters()
-  requestAnimationFrame(() => {
-    graphCanvas.value?.resetGraph()
-  })
+function handleStatsChange(nextStats) {
+  stats.value = nextStats
 }
 </script>
+
+<template>
+  <div class="dashboard-layout">
+    <aside class="dashboard-sidebar">
+      <div class="brand-box">
+        <div class="brand-dot"></div>
+        <span>Twix.im</span>
+      </div>
+
+      <div class="sidebar-search">Поиск...</div>
+
+      <nav class="sidebar-menu">
+        <button class="menu-item active">Сеть партнеров</button>
+        <button class="menu-item">Связи</button>
+        <button class="menu-item">Скам-алерты</button>
+        <button class="menu-item">Статистика</button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button class="menu-item ghost">Уведомления</button>
+        <button class="menu-item ghost">Настройки</button>
+        <button class="menu-item ghost">Telegram</button>
+      </div>
+    </aside>
+
+    <main class="dashboard-main">
+      <div class="top-metrics">
+        <div class="metric-pill"><span class="metric-dot blue"></span>{{ stats.nodes }} мерч.</div>
+        <div class="metric-pill"><span class="metric-dot cyan"></span>12 проц.</div>
+        <div class="metric-pill"><span class="metric-dot purple"></span>{{ stats.edges }} связей</div>
+        <div class="metric-pill"><span class="metric-dot red"></span>5 скам</div>
+        <div class="metric-pill"><span class="metric-dot orange"></span>3 подозр.</div>
+      </div>
+
+      <GraphCanvas
+          ref="graphCanvas"
+          :graph="graph"
+          :filters="{
+          search: '',
+          types: ['hub', 'processor', 'merchant'],
+          statuses: ['active', 'warning', 'danger', 'unknown'],
+          edgeTypes: ['hub', 'direct', 'dashed'],
+          hideIsolated: false,
+        }"
+          @stats-change="handleStatsChange"
+      />
+    </main>
+  </div>
+</template>
