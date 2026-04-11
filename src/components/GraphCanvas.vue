@@ -3,7 +3,7 @@ import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import cytoscape from 'cytoscape'
 import GraphLegend from './graph/GraphLegend.vue'
-import GraphDetailsPanel from './graph/GraphDetailsPanel.vue'
+import NodeDetailsDrawer from "@/components/graph/details/NodeDetailsDrawer.vue";
 import { graphToElements } from '../utils/mapToElements'
 import { useGraphStore } from '../store/graphStore'
 
@@ -17,7 +17,11 @@ const graphRef = ref(null)
 const cyInstance = ref(null)
 const isGraphReady = ref(false)
 
-const { filteredGraph: graph } = storeToRefs(graphStore)
+const {
+  filteredGraph: graph,
+  selectedNode,
+  activeTab,
+} = storeToRefs(graphStore)
 
 /**
  * Создает стили Cytoscape для отображения узлов и связей.
@@ -252,6 +256,13 @@ function clearSelection() {
   clearHighlight()
 }
 
+function handleEscapeKey(event) {
+  if (event.key !== 'Escape') return
+  if (!selectedNode.value) return
+
+  clearSelection()
+}
+
 /**
  * Инициализирует граф Cytoscape.
  */
@@ -386,10 +397,12 @@ function zoomOut() {
 
 onMounted(() => {
   initGraph()
+  window.addEventListener('keydown', handleEscapeKey)
 })
 
 onBeforeUnmount(() => {
   destroyGraph()
+  window.removeEventListener('keydown', handleEscapeKey)
 })
 
 watch(
@@ -426,6 +439,13 @@ defineExpose({
   <div class="graph-shell">
     <div ref="graphRef" class="graph-canvas" :class="{ 'graph-canvas--ready': isGraphReady }" />
     <GraphLegend />
-    <GraphDetailsPanel />
+    <NodeDetailsDrawer
+        :model-value="!!selectedNode"
+        :node="selectedNode"
+        :active-tab="activeTab"
+        @update:model-value="(isOpen) => !isOpen && clearSelection()"
+        @update:active-tab="(tabId) => graphStore.setActiveTab(tabId)"
+        @close="clearSelection"
+    />
   </div>
 </template>
