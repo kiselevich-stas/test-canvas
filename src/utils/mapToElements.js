@@ -1,67 +1,92 @@
 import { buildNodeSprite } from './nodeSprite'
 
+/**
+ * Преобразует доменную модель графа в массив элементов Cytoscape.
+ * Для узлов используется sprite, чтобы сохранить старый внешний вид:
+ * круг основного типа + цветная статусная точка.
+ *
+ * @param {{ nodes: Array<object>, edges: Array<object> }} graph - Граф в прикладном формате.
+ * @returns {Array<object>} Элементы Cytoscape для инициализации канваса.
+ */
 export function graphToElements(graph) {
-  const nodes = graph.nodes.map((node) => ({
-    group: 'nodes',
+  const nodeElements = graph.nodes.map((node) => ({
     data: {
-      ...node,
-      sprite: buildNodeSprite(node),
+      id: node.id,
+      label: node.label,
+      size: node.size,
+      sprite: buildNodeSprite({
+        type: node.type,
+        status: node.status,
+        size: node.size,
+      }),
+      type: node.type,
+      status: node.status,
+      meta: node.meta,
     },
     position: {
       x: node.x,
       y: node.y,
     },
-    selectable: true,
-    grabbable: true,
   }))
 
-  const edges = graph.edges.map((edge) => ({
-    group: 'edges',
+  const edgeElements = graph.edges.map((edge) => ({
     data: {
-      ...edge,
+      id: edge.id || `${edge.source}-${edge.target}`,
+      source: edge.source,
+      target: edge.target,
+      edgeType: edge.edgeType,
     },
-    selectable: true,
   }))
 
-  return [...nodes, ...edges]
+  return [...nodeElements, ...edgeElements]
 }
 
+/**
+ * Фильтрует граф по строке поиска, типам, статусам, типам связей
+ * и опционально скрывает изолированные узлы.
+ *
+ * @param {{ nodes: Array<object>, edges: Array<object> }} graph - Исходный граф.
+ * @param {{ search: string, types: string[], statuses: string[], edgeTypes: string[], hideIsolated: boolean }} filters - Текущие фильтры.
+ * @returns {{ nodes: Array<object>, edges: Array<object> }} Новый отфильтрованный граф.
+ */
 export function filterGraph(graph, filters) {
-  const allowedNodes = graph.nodes.filter((node) => {
-    const typeOk = filters.types.includes(node.type)
-    const statusOk = filters.statuses.includes(node.status)
-    const query = filters.search.trim().toLowerCase()
-    const textOk = !query || node.label.toLowerCase().includes(query)
-    return typeOk && statusOk && textOk
+  const normalizedSearch = String(filters.search || '').trim().toLowerCase()
+
+  let nodes = graph.nodes.filter((node) => {
+    const byType = filters.types.includes(node.type)
+    const byStatus = filters.statuses.includes(node.status)
+
+    const haystack = [
+      node.label,
+      node.id,
+      node.meta?.shortName,
+      node.meta?.typeLabel,
+      ...(node.meta?.contacts || []),
+    ]
+        .filter(Boolean)
+        .join(' ')
+        .toLowerCase()
+
+    const bySearch = !normalizedSearch || haystack.includes(normalizedSearch)
+
+    return byType && byStatus && bySearch
   })
 
-  const allowedIds = new Set(allowedNodes.map((node) => node.id))
+  const allowedNodeIds = new Set(nodes.map((node) => node.id))
 
-  const allowedEdges = graph.edges.filter((edge) => {
-    if (!filters.edgeTypes.includes(edge.edgeType)) return false
-    return allowedIds.has(edge.source) && allowedIds.has(edge.target)
+  let edges = graph.edges.filter((edge) => {
+    return filters.edgeTypes.includes(edge.edgeType)
+        && allowedNodeIds.has(edge.source)
+        && allowedNodeIds.has(edge.target)
   })
 
-  const connectedIds = new Set()
+  if (filters.hideIsolated) {
+    const connectedNodeIds = new Set(edges.flatMap((edge) => [edge.source, edge.target]))
+    nodes = nodes.filter((node) => connectedNodeIds.has(node.id))
 
-  allowedEdges.forEach((edge) => {
-    connectedIds.add(edge.source)
-    connectedIds.add(edge.target)
-  })
-
-  const finalNodes = allowedNodes.filter((node) => {
-    if (node.type === 'hub') return true
-    if (!filters.hideIsolated) return true
-    return connectedIds.has(node.id)
-  })
-
-  const finalIds = new Set(finalNodes.map((node) => node.id))
-  const finalEdges = allowedEdges.filter(
-    (edge) => finalIds.has(edge.source) && finalIds.has(edge.target),
-  )
-
-  return {
-    nodes: finalNodes,
-    edges: finalEdges,
+    const visibleIds = new Set(nodes.map((node) => node.id))
+    edges = edges.filter((edge) => visibleIds.has(edge.source) && visibleIds.has(edge.target))
   }
+
+  return { nodes, edges }
 }

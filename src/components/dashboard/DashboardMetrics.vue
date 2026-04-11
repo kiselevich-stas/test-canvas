@@ -1,10 +1,9 @@
 <script setup>
-const props = defineProps({
-  stats: {
-    type: Object,
-    required: true,
-  },
-})
+import { storeToRefs } from 'pinia'
+import { useGraphStore } from '../../store/graphStore'
+
+const graphStore = useGraphStore()
+const { stats } = storeToRefs(graphStore)
 </script>
 
 <template>
@@ -26,12 +25,12 @@ const props = defineProps({
 
     <div class="metric-pill">
       <span class="metric-dot red"></span>
-      5 скам
+      {{ stats.danger }} скам
     </div>
 
     <div class="metric-pill">
       <span class="metric-dot orange"></span>
-      3 подозр.
+      {{ stats.warning }} подозр.
     </div>
   </div>
 </template>
@@ -53,33 +52,19 @@ const props = defineProps({
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  font-size: 13px;
-  color: #676767;
+  color: #2f3137;
+  font-size: 14px;
 }
 
 .metric-dot {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-
-  &.blue {
-    background: #3b82f6;
-  }
-
-  &.cyan {
-    background: #36c2da;
-  }
-
-  &.purple {
-    background: #8b5cf6;
-  }
-
-  &.red {
-    background: #ef4444;
-  }
-
-  &.orange {
-    background: #f97316;
-  }
 }
+
+.metric-dot.blue { background: #3b82f6; }
+.metric-dot.cyan { background: #36c2da; }
+.metric-dot.purple { background: #8b5cf6; }
+.metric-dot.red { background: #ef4444; }
+.metric-dot.orange { background: #f97316; }
 </style>

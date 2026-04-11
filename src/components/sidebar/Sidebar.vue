@@ -1,73 +1,76 @@
 <script setup>
-import { ref } from 'vue'
+import { computed } from 'vue'
+import { useGraphStore } from '../../store/graphStore'
 import SidebarSearch from './SidebarSearch.vue'
 
-const isCollapsed = ref(false)
-const search = ref('')
+const graphStore = useGraphStore()
+
+const isCollapsed = computed(() => graphStore.sidebarCollapsed)
+
+const search = computed({
+  get: () => graphStore.filters.search,
+  set: (value) => graphStore.setSearch(value),
+})
 
 function toggleSidebar() {
-  isCollapsed.value = !isCollapsed.value
+  graphStore.toggleSidebar()
 }
 </script>
 
 <template>
   <aside :class="['sidebar', { collapsed: isCollapsed }]">
-    <!-- HEADER -->
     <div class="sidebar-header">
-      <div class="brand" v-if="!isCollapsed">
+      <div v-if="!isCollapsed" class="brand">
         <img src="/assets/icons/logo.svg" alt="logo">
         <span>Twix.im</span>
       </div>
 
-      <button class="toggle-btn" @click="toggleSidebar" >
-        <img src="/assets/icons/arrow-left.svg" alt="arrow-icon" v-if="!isCollapsed">
-        <img src="/assets/icons/logo.svg" alt="logo" v-if="isCollapsed">
+      <button class="toggle-btn" type="button" @click="toggleSidebar">
+        <img v-if="!isCollapsed" src="/assets/icons/arrow-left.svg" alt="arrow-icon">
+        <img v-else src="/assets/icons/logo.svg" alt="logo">
       </button>
     </div>
 
     <div class="sidebar-wrapper">
-      <!-- SEARCH -->
       <SidebarSearch
           v-if="!isCollapsed"
           v-model="search"
       />
 
-      <!-- MENU -->
       <nav class="sidebar-menu">
-        <button class="menu-item active">
+        <button class="menu-item active" type="button">
           <img src="/assets/icons/git-fork.svg" alt="git-fork-icon">
           <span v-if="!isCollapsed">Сеть партнеров</span>
         </button>
 
-        <button class="menu-item">
+        <button class="menu-item" type="button">
           <img src="/assets/icons/link.svg" alt="link-icon">
           <span v-if="!isCollapsed">Связи</span>
         </button>
 
-        <button class="menu-item">
+        <button class="menu-item" type="button">
           <img src="/assets/icons/spam.svg" alt="scam-icon">
           <span v-if="!isCollapsed">Скам-алерты</span>
         </button>
 
-        <button class="menu-item">
+        <button class="menu-item" type="button">
           <img src="/assets/icons/waterfall-up.svg" alt="statistics-icon">
           <span v-if="!isCollapsed">Статистика</span>
         </button>
       </nav>
 
-      <!-- FOOTER -->
       <div class="sidebar-footer">
-        <button class="menu-item ghost">
+        <button class="menu-item ghost" type="button">
           <img src="/assets/icons/notification.svg" alt="notification-icon">
           <span v-if="!isCollapsed">Уведомления</span>
         </button>
 
-        <button class="menu-item ghost">
+        <button class="menu-item ghost" type="button">
           <img src="/assets/icons/setting.svg" alt="setting-icon">
           <span v-if="!isCollapsed">Настройки</span>
         </button>
 
-        <button class="menu-item ghost">
+        <button class="menu-item ghost" type="button">
           <img src="/assets/icons/telegram.svg" alt="telegram-icon">
           <span v-if="!isCollapsed">Telegram</span>
         </button>
@@ -81,10 +84,8 @@ function toggleSidebar() {
   width: 240px;
   padding: 8px;
   border-radius: 12px;
-
   display: flex;
   flex-direction: column;
-
   transition: width 0.25s ease;
 }
 
@@ -92,7 +93,6 @@ function toggleSidebar() {
   width: 72px;
 }
 
-/* HEADER */
 .sidebar-header {
   display: flex;
   align-items: center;
@@ -103,7 +103,8 @@ function toggleSidebar() {
   border-radius: 12px;
   height: 36px;
 }
-.sidebar-wrapper{
+
+.sidebar-wrapper {
   display: flex;
   flex-direction: column;
   padding: 8px;
@@ -111,18 +112,19 @@ function toggleSidebar() {
   flex-grow: 1;
   border-radius: 12px;
 }
+
 .brand {
   display: flex;
   align-items: center;
   gap: 8px;
   font-size: 13px;
-  span{
+
+  span {
     font-weight: 600;
     font-size: 14px;
     line-height: 20px;
     letter-spacing: 0;
     vertical-align: middle;
-
     color: #131313;
   }
 }
@@ -134,9 +136,11 @@ function toggleSidebar() {
   border: none;
   background: #ececec;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* MENU */
 .sidebar-menu,
 .sidebar-footer {
   display: grid;
@@ -157,7 +161,8 @@ function toggleSidebar() {
   gap: 10px;
   cursor: pointer;
   color: #6b7280;
-  span{
+
+  span {
     white-space: nowrap;
     font-weight: 500;
     font-size: 14px;
@@ -170,25 +175,19 @@ function toggleSidebar() {
 .menu-item.active {
   background: #FFFFFF;
   color: #131313;
+
+  span {
+    color: #131313;
+  }
 }
 
 .menu-item.ghost {
   background: transparent;
 }
 
-/* ICON */
-.icon {
-  width: 20px;
-  text-align: center;
-  font-size: 16px;
-}
-
-/* COLLAPSED MODE */
 .sidebar.collapsed .menu-item {
   justify-content: center;
-}
-
-.sidebar.collapsed .sidebar-search {
-  display: none;
+  padding-left: 0;
+  padding-right: 0;
 }
 </style>
