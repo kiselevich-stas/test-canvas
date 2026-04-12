@@ -17,7 +17,7 @@ defineEmits<{
 
     <UiButton
         variant="primary"
-        icon="plus"
+        icon="plus-sign"
         @click="$emit('request')"
     >
       Запросить связь

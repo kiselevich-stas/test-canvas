@@ -17,9 +17,10 @@ button, input { font: inherit; }
 }
 
 .dashboard-main {
-  display: grid;
-  grid-template-rows: auto 1fr;
-
+  /*display: grid;*/
+  /*grid-template-rows: auto 1fr;*/
+  display: flex;
+  flex-direction: column;
   max-height: 100vh;
   padding: 8px;
   position: relative;

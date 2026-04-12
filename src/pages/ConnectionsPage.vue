@@ -1,21 +1,31 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
-import { watch, onMounted } from 'vue'
+import { watch, onMounted, ref } from 'vue'
 import ConnectionsHeader from '@/components/connections/ConnectionsHeader.vue'
 import ConnectionsTabs from '@/components/connections/ConnectionsTabs.vue'
 import ConnectionsList from '@/components/connections/ConnectionsList.vue'
+import ConnectionsPagination from '@/components/connections/ConnectionsPagination.vue'
+import ConnectionsRequestModal from "@/components/connections/modal/ConnectionsRequestModal.vue";
 import { useConnectionsStore } from '@/store/connectionsStore'
-import { useToastStore} from "@/store/toast";
+import { useToastStore } from '@/store/toast'
 import BaseSection from '@/components/common/BaseSection.vue'
 
 const connectionsStore = useConnectionsStore()
 const toastStore = useToastStore()
+const isInitialLoadCompleted = ref(false)
 
 const {
   activeTab,
   counts,
-  filteredItems,
+  paginatedItems,
   pendingCount,
+  isLoading,
+  currentPage,
+  totalPages,
+  skeletonRows,
+  items,
+  isRequestModalOpen,
+  isSubmittingRequest,
 } = storeToRefs(connectionsStore)
 
 function handleTabChange(tab: 'all' | 'pending' | 'active') {
@@ -23,7 +33,11 @@ function handleTabChange(tab: 'all' | 'pending' | 'active') {
 }
 
 function handleRequestConnection() {
-  console.log('request connection')
+  connectionsStore.openRequestModal()
+}
+
+function handlePageChange(page: number): void {
+  connectionsStore.setPage(page)
 }
 
 function showPendingConnectionsToast(count: number): void {
@@ -39,6 +53,7 @@ function showPendingConnectionsToast(count: number): void {
     closable: true,
   })
 }
+
 function getRequestsWordEnding(count: number): string {
   const lastTwoDigits = count % 100
   const lastDigit = count % 10
@@ -58,15 +73,30 @@ function getRequestsWordEnding(count: number): string {
   return 'ов'
 }
 
-onMounted(() => {
+onMounted(async () => {
+  await connectionsStore.loadConnections()
+  isInitialLoadCompleted.value = true
   showPendingConnectionsToast(pendingCount.value)
 })
 
 watch(pendingCount, (newValue, oldValue) => {
+  if (!isInitialLoadCompleted.value) {
+    return
+  }
+
   if (newValue > 0 && newValue !== oldValue) {
     showPendingConnectionsToast(newValue)
   }
 })
+function handleRequestSuccess(): void {
+  toastStore.show({
+    type: 'success',
+    title: 'Запрос отправлен',
+    message: 'Запрос на создание связи успешно отправлен',
+    duration: 4000,
+    closable: true,
+  })
+}
 </script>
 
 <template>
@@ -82,16 +112,38 @@ watch(pendingCount, (newValue, oldValue) => {
     </div>
 
     <div class="connections-page__content">
-      <ConnectionsList :items="filteredItems" />
+      <ConnectionsList
+          :items="paginatedItems"
+          :is-loading="isLoading"
+          :skeleton-rows="skeletonRows"
+      />
     </div>
+
+    <ConnectionsPagination
+        :current-page="currentPage"
+        :total-pages="totalPages"
+        @change="handlePageChange"
+    />
+
+    <ConnectionsRequestModal
+        v-model="isRequestModalOpen"
+        @success="handleRequestSuccess"
+    />
   </BaseSection>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
+.connections-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
 .connections-page__toolbar {
   display: flex;
   align-items: center;
   justify-content: flex-start;
+  margin-bottom: 12px;
 }
 
 .connections-page__content {
