@@ -12,6 +12,51 @@ const search = computed({
   set: (value) => graphStore.setSearch(value),
 })
 
+const menuItems = [
+  {
+    label: 'Сеть партнеров',
+    to: '/',
+    icon: '/assets/icons/git-fork.svg',
+    alt: 'git-fork-icon',
+  },
+  {
+    label: 'Связи',
+    to: '/connections',
+    icon: '/assets/icons/link.svg',
+    alt: 'link-icon',
+  },
+  {
+    label: 'Скам-алерты',
+    to: '/scam-alerts',
+    icon: '/assets/icons/spam.svg',
+    alt: 'scam-icon',
+  },
+  {
+    label: 'Статистика',
+    to: '/statistics',
+    icon: '/assets/icons/waterfall-up.svg',
+    alt: 'statistics-icon',
+  },
+]
+
+const footerItems = [
+  {
+    label: 'Уведомления',
+    icon: '/assets/icons/notification.svg',
+    alt: 'notification-icon',
+  },
+  {
+    label: 'Настройки',
+    icon: '/assets/icons/setting.svg',
+    alt: 'setting-icon',
+  },
+  {
+    label: 'Telegram',
+    icon: '/assets/icons/telegram.svg',
+    alt: 'telegram-icon',
+  },
+]
+
 function toggleSidebar() {
   graphStore.toggleSidebar()
 }
@@ -38,41 +83,28 @@ function toggleSidebar() {
       />
 
       <nav class="sidebar-menu">
-        <button class="menu-item active" type="button">
-          <img src="/assets/icons/git-fork.svg" alt="git-fork-icon">
-          <span v-if="!isCollapsed">Сеть партнеров</span>
-        </button>
-
-        <button class="menu-item" type="button">
-          <img src="/assets/icons/link.svg" alt="link-icon">
-          <span v-if="!isCollapsed">Связи</span>
-        </button>
-
-        <button class="menu-item" type="button">
-          <img src="/assets/icons/spam.svg" alt="scam-icon">
-          <span v-if="!isCollapsed">Скам-алерты</span>
-        </button>
-
-        <button class="menu-item" type="button">
-          <img src="/assets/icons/waterfall-up.svg" alt="statistics-icon">
-          <span v-if="!isCollapsed">Статистика</span>
-        </button>
+        <router-link
+            v-for="item in menuItems"
+            :key="item.to"
+            :to="item.to"
+            class="menu-item"
+            active-class="menu-item--active"
+            exact-active-class="menu-item--active"
+        >
+          <img :src="item.icon" :alt="item.alt">
+          <span v-if="!isCollapsed">{{ item.label }}</span>
+        </router-link>
       </nav>
 
       <div class="sidebar-footer">
-        <button class="menu-item ghost" type="button">
-          <img src="/assets/icons/notification.svg" alt="notification-icon">
-          <span v-if="!isCollapsed">Уведомления</span>
-        </button>
-
-        <button class="menu-item ghost" type="button">
-          <img src="/assets/icons/setting.svg" alt="setting-icon">
-          <span v-if="!isCollapsed">Настройки</span>
-        </button>
-
-        <button class="menu-item ghost" type="button">
-          <img src="/assets/icons/telegram.svg" alt="telegram-icon">
-          <span v-if="!isCollapsed">Telegram</span>
+        <button
+            v-for="item in footerItems"
+            :key="item.label"
+            class="menu-item menu-item--ghost"
+            type="button"
+        >
+          <img :src="item.icon" :alt="item.alt">
+          <span v-if="!isCollapsed">{{ item.label }}</span>
         </button>
       </div>
     </div>
@@ -161,6 +193,7 @@ function toggleSidebar() {
   gap: 10px;
   cursor: pointer;
   color: #6b7280;
+  text-decoration: none;
 
   span {
     white-space: nowrap;
@@ -172,7 +205,7 @@ function toggleSidebar() {
   }
 }
 
-.menu-item.active {
+.menu-item--active {
   background: #FFFFFF;
   color: #131313;
 
@@ -181,7 +214,7 @@ function toggleSidebar() {
   }
 }
 
-.menu-item.ghost {
+.menu-item--ghost {
   background: transparent;
 }
 

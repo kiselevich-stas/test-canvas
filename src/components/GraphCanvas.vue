@@ -6,6 +6,8 @@ import GraphLegend from './graph/GraphLegend.vue'
 import NodeDetailsDrawer from "@/components/graph/details/NodeDetailsDrawer.vue";
 import { graphToElements } from '../utils/mapToElements'
 import { useGraphStore } from '../store/graphStore'
+import GraphFiltersWidget from "@/components/graph/filters/GraphFiltersWidget.vue";
+
 
 const DEFAULT_CENTER_ID = 'core'
 const STORAGE_KEY_VIEWPORT = 'twix-graph-viewport'
@@ -439,6 +441,7 @@ defineExpose({
   <div class="graph-shell">
     <div ref="graphRef" class="graph-canvas" :class="{ 'graph-canvas--ready': isGraphReady }" />
     <GraphLegend />
+    <GraphFiltersWidget />
     <NodeDetailsDrawer
         :model-value="!!selectedNode"
         :node="selectedNode"

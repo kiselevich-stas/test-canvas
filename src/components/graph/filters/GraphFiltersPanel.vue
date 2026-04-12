@@ -1,153 +1,188 @@
-<script setup lang="ts">
+<script setup>
 import { computed } from 'vue'
-import GraphFilterSection from './GraphFilterSection.vue'
+import { useGraphStore } from '@/store/graphStore.js'
 import GraphFilterOption from './GraphFilterOption.vue'
 import GraphFilterSwitch from './GraphFilterSwitch.vue'
 
-export type FilterOption = {
-  label: string
-  value: string
-  color?: string
+const emit = defineEmits(['close'])
+
+const graphStore = useGraphStore()
+
+const participantTypes = [
+  { label: 'Хаб', value: 'hub', color: '#8b5cf6', icon: 'hub' },
+  { label: 'Процессинги', value: 'processor', color: '#24b9d7', icon: 'processor' },
+  { label: 'Мерчанты', value: 'merchant', color: '#3b82f6', icon: 'merchant' },
+]
+
+const statuses = [
+  { label: 'Активные', value: 'active', color: '#22c55e' },
+  { label: 'Подозрительные', value: 'warning', color: '#f97316' },
+  { label: 'Скам', value: 'danger', color: '#ef4444' },
+  { label: 'Неактивные', value: 'unknown', color: '#8f8f8f' },
+]
+
+const selectedParticipantType = computed(() => graphStore.selectedParticipantType)
+const selectedStatus = computed(() => graphStore.selectedStatus)
+const alertsOnly = computed(() => graphStore.alertsOnly)
+
+function setParticipantType(value) {
+  graphStore.setParticipantTypeFilter(value)
 }
 
-const props = defineProps<{
-  participantTypes: FilterOption[]
-  statuses: FilterOption[]
-  selectedParticipantType: string | null
-  selectedStatus: string | null
-  alertsOnly: boolean
-}>()
-
-const emit = defineEmits<{
-  'update:selectedParticipantType': [value: string | null]
-  'update:selectedStatus': [value: string | null]
-  'update:alertsOnly': [value: boolean]
-  reset: []
-}>()
-
-const selectedParticipantLabel = computed(() => {
-  return props.participantTypes.find(item => item.value === props.selectedParticipantType)?.label || 'Все типы'
-})
-
-const selectedStatusLabel = computed(() => {
-  return props.statuses.find(item => item.value === props.selectedStatus)?.label || 'Все статусы'
-})
-
-function selectParticipantType(value: string | null) {
-  emit('update:selectedParticipantType', value)
+function setStatus(value) {
+  graphStore.setStatusFilter(value)
 }
 
-function selectStatus(value: string | null) {
-  emit('update:selectedStatus', value)
-}
-
-function updateAlertsOnly(value: boolean) {
-  emit('update:alertsOnly', value)
+function setAlertsOnly(value) {
+  graphStore.setAlertsOnlyFilter(value)
 }
 
 function resetFilters() {
-  emit('reset')
+  graphStore.resetFilters()
 }
 </script>
 
 <template>
-  <aside class="graph-filters-panel">
-    <GraphFilterSection title="Тип участника">
-      <div class="graph-filters-panel__group">
+  <div class="graph-filters-panel">
+    <button
+        type="button"
+        class="graph-filters-panel__close"
+        aria-label="Закрыть фильтры"
+        @click="emit('close')"
+    >
+      ×
+    </button>
+
+    <div class="graph-filters-panel__card">
+      <div class="graph-filters-panel__section">
+        <div class="graph-filters-panel__title">Тип участника</div>
+
         <GraphFilterOption
-            :label="selectedParticipantLabel"
-            value="all"
+            label="Все типы"
             :active="selectedParticipantType === null"
-            with-check
-            @click="selectParticipantType(null)"
+            icon="all"
+            @click="setParticipantType(null)"
         />
 
         <GraphFilterOption
-            v-for="type in participantTypes"
-            :key="type.value"
-            :label="type.label"
-            :value="type.value"
-            :active="selectedParticipantType === type.value"
-            :color="type.color"
-            @click="selectParticipantType(type.value)"
+            v-for="item in participantTypes"
+            :key="item.value"
+            :label="item.label"
+            :active="selectedParticipantType === item.value"
+            :color="item.color"
+            :icon="item.icon"
+            @click="setParticipantType(item.value)"
         />
       </div>
-    </GraphFilterSection>
 
-    <GraphFilterSection title="Статус">
-      <div class="graph-filters-panel__group">
+      <div class="graph-filters-panel__divider" />
+
+      <div class="graph-filters-panel__section">
+        <div class="graph-filters-panel__title">Статус</div>
+
         <GraphFilterOption
-            :label="selectedStatusLabel"
-            value="all"
+            label="Все статусы"
             :active="selectedStatus === null"
-            with-check
-            @click="selectStatus(null)"
+            icon="all"
+            @click="setStatus(null)"
         />
 
         <GraphFilterOption
-            v-for="status in statuses"
-            :key="status.value"
-            :label="status.label"
-            :value="status.value"
-            :active="selectedStatus === status.value"
-            :color="status.color"
-            @click="selectStatus(status.value)"
+            v-for="item in statuses"
+            :key="item.value"
+            :label="item.label"
+            :active="selectedStatus === item.value"
+            :color="item.color"
+            @click="setStatus(item.value)"
         />
       </div>
-    </GraphFilterSection>
 
-    <div class="graph-filters-panel__bottom">
-      <GraphFilterSwitch
-          label="Только с алертами"
-          :model-value="alertsOnly"
-          @update:model-value="updateAlertsOnly"
-      />
+      <div class="graph-filters-panel__divider" />
 
-      <button class="graph-filters-panel__reset" type="button" @click="resetFilters">
-        Сбросить фильтры
-      </button>
+      <div class="graph-filters-panel__bottom">
+        <GraphFilterSwitch
+            label="Только с алертами"
+            :model-value="alertsOnly"
+            @update:model-value="setAlertsOnly"
+        />
+
+        <button
+            type="button"
+            class="graph-filters-panel__reset"
+            @click="resetFilters"
+        >
+          Сбросить фильтры
+        </button>
+      </div>
     </div>
-  </aside>
+  </div>
 </template>
 
 <style scoped>
 .graph-filters-panel {
-  width: 100%;
-  max-width: 156px;
-  padding: 12px;
-  border-radius: 16px;
-  background: #f4f4f6;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 232px;
 }
 
-.graph-filters-panel__group {
+.graph-filters-panel__close {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 38px;
+  height: 38px;
+  border: 0;
+  border-radius: 11px;
+  background: #f4f4f6;
+  color: #111827;
+  font-size: 28px;
+  line-height: 1;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.graph-filters-panel__card {
+  margin-top: 42px;
+  background: #f4f4f6;
+  border-radius: 20px;
+  padding: 14px 14px 16px;
+  box-shadow: 0 2px 14px rgba(15, 23, 42, 0.04);
+}
+
+.graph-filters-panel__section {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
+.graph-filters-panel__title {
+  color: #a3a3ad;
+  font-size: 12px;
+  line-height: 1.25;
+}
+
+.graph-filters-panel__divider {
+  height: 1px;
+  background: #e7e7eb;
+  margin: 12px 0;
+}
+
 .graph-filters-panel__bottom {
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  padding-top: 2px;
+  gap: 16px;
 }
 
 .graph-filters-panel__reset {
-  border: none;
+  border: 0;
   background: transparent;
-  color: #2f2f35;
-  font-size: 12px;
+  color: #111827;
+  font-size: 15px;
   font-weight: 500;
   line-height: 1.2;
   cursor: pointer;
   padding: 0;
   text-align: center;
-}
-
-.graph-filters-panel__reset:hover {
-  opacity: 0.7;
 }
 </style>

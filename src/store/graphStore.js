@@ -3,11 +3,15 @@ import { defineStore } from 'pinia'
 import { sampleGraph } from '../data/sampleGraph'
 import { filterGraph } from '../utils/mapToElements'
 
+const ALL_TYPES = ['hub', 'processor', 'merchant']
+const ALL_STATUSES = ['active', 'warning', 'danger', 'unknown']
+const ALL_EDGE_TYPES = ['hub', 'direct', 'dashed']
+
 const DEFAULT_FILTERS = Object.freeze({
   search: '',
-  types: ['hub', 'processor', 'merchant'],
-  statuses: ['active', 'warning', 'danger', 'unknown'],
-  edgeTypes: ['hub', 'direct', 'dashed'],
+  types: [...ALL_TYPES],
+  statuses: [...ALL_STATUSES],
+  edgeTypes: [...ALL_EDGE_TYPES],
   hideIsolated: false,
 })
 
@@ -48,6 +52,45 @@ export const useGraphStore = defineStore('graph', () => {
     ]
   })
 
+  /**
+   * Выбранный одиночный тип для UI-фильтра.
+   * null = выбраны все типы.
+   */
+  const selectedParticipantType = computed(() => {
+    if (filters.value.types.length === ALL_TYPES.length) {
+      return null
+    }
+
+    if (filters.value.types.length === 1) {
+      return filters.value.types[0]
+    }
+
+    return null
+  })
+
+  /**
+   * Выбранный одиночный статус для UI-фильтра.
+   * null = выбраны все статусы.
+   */
+  const selectedStatus = computed(() => {
+    if (filters.value.statuses.length === ALL_STATUSES.length) {
+      return null
+    }
+
+    if (filters.value.statuses.length === 1) {
+      return filters.value.statuses[0]
+    }
+
+    return null
+  })
+
+  /**
+   * Флаг "только с алертами".
+   * Предполагаем, что hideIsolated используется для скрытия нерелевантных/пустых узлов.
+   * Если логика другая, можно заменить на отдельное поле filters.alertsOnly.
+   */
+  const alertsOnly = computed(() => filters.value.hideIsolated)
+
   function setSearch(search) {
     filters.value.search = search
     ensureSelectionIsVisible()
@@ -70,6 +113,35 @@ export const useGraphStore = defineStore('graph', () => {
 
   function resetFilters() {
     filters.value = structuredClone(DEFAULT_FILTERS)
+    ensureSelectionIsVisible()
+  }
+
+  /**
+   * Устанавливает одиночный фильтр по типу.
+   * null = показать все типы.
+   */
+  function setParticipantTypeFilter(value) {
+    filters.value.types = value ? [value] : [...ALL_TYPES]
+    ensureSelectionIsVisible()
+  }
+
+  /**
+   * Устанавливает одиночный фильтр по статусу.
+   * null = показать все статусы.
+   */
+  function setStatusFilter(value) {
+    filters.value.statuses = value ? [value] : [...ALL_STATUSES]
+    ensureSelectionIsVisible()
+  }
+
+  /**
+   * Переключает фильтр "только с алертами".
+   * Сейчас завязан на hideIsolated.
+   * Если хочешь честную фильтрацию по alert'ам, лучше добавить отдельное поле в filters
+   * и доработать filterGraph.
+   */
+  function setAlertsOnlyFilter(value) {
+    filters.value.hideIsolated = value
     ensureSelectionIsVisible()
   }
 
@@ -111,10 +183,20 @@ export const useGraphStore = defineStore('graph', () => {
     selectedNode,
     stats,
     tabs,
+
+    selectedParticipantType,
+    selectedStatus,
+    alertsOnly,
+
     setSearch,
     setFilterField,
     toggleFilterValue,
     resetFilters,
+
+    setParticipantTypeFilter,
+    setStatusFilter,
+    setAlertsOnlyFilter,
+
     selectNode,
     clearSelection,
     setActiveTab,

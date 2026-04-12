@@ -42,6 +42,12 @@ const { stats } = storeToRefs(graphStore)
   gap: 10px;
   align-items: center;
   padding: 8px 0;
+
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 2;
 }
 
 .metric-pill {
