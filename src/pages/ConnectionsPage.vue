@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
-import { watch, onMounted, ref } from 'vue'
+import {watch, onMounted, ref, onBeforeUnmount} from 'vue'
 import ConnectionsHeader from '@/components/connections/ConnectionsHeader.vue'
 import ConnectionsTabs from '@/components/connections/ConnectionsTabs.vue'
 import ConnectionsList from '@/components/connections/ConnectionsList.vue'
@@ -88,6 +88,11 @@ watch(pendingCount, (newValue, oldValue) => {
     showPendingConnectionsToast(newValue)
   }
 })
+
+onBeforeUnmount(() => {
+  toastStore.clear()
+})
+
 function handleRequestSuccess(): void {
   toastStore.show({
     type: 'success',

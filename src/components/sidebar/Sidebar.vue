@@ -47,6 +47,7 @@ const footerItems = [
   },
   {
     label: 'Настройки',
+    to: '/settings',
     icon: '/assets/icons/setting.svg',
     alt: 'setting-icon',
   },
@@ -97,15 +98,16 @@ function toggleSidebar() {
       </nav>
 
       <div class="sidebar-footer">
-        <button
+        <router-link
             v-for="item in footerItems"
             :key="item.label"
             class="menu-item menu-item--ghost"
             type="button"
+            :to="item.to"
         >
           <img :src="item.icon" :alt="item.alt">
           <span v-if="!isCollapsed">{{ item.label }}</span>
-        </button>
+        </router-link>
       </div>
     </div>
   </aside>

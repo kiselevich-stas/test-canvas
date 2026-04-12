@@ -440,7 +440,9 @@ defineExpose({
 <template>
   <div class="graph-shell">
     <div ref="graphRef" class="graph-canvas" :class="{ 'graph-canvas--ready': isGraphReady }" />
-    <GraphLegend />
+    <Transition name="dashboard-fade" appear>
+      <GraphLegend v-if="isGraphReady" />
+    </Transition>
     <GraphFiltersWidget />
     <NodeDetailsDrawer
         :model-value="!!selectedNode"
@@ -452,3 +454,41 @@ defineExpose({
     />
   </div>
 </template>
+
+<style scoped lang="scss">
+.graph-shell {
+  position: relative;
+}
+
+:deep(.dashboard-fade-enter-active) {
+  animation: graph-widget-in 520ms cubic-bezier(0.22, 1, 0.36, 1);
+  animation-delay: 140ms;
+  animation-fill-mode: both;
+  will-change: opacity, transform, filter;
+}
+
+:deep(.dashboard-fade-leave-active) {
+  transition:
+      opacity 0.18s ease,
+      transform 0.18s ease,
+      filter 0.18s ease;
+}
+
+:deep(.dashboard-fade-leave-to) {
+  opacity: 0;
+  transform: translateY(6px) scale(0.98);
+  filter: blur(4px);
+}
+
+@keyframes graph-widget-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+</style>

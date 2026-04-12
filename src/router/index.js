@@ -21,6 +21,11 @@ const routes = [
         name: 'statistics',
         component: () => import('@/pages/StatisticsPage.vue'),
     },
+    {
+        path: '/settings',
+        name: 'settings',
+        component: () => import('@/pages/SettingsPage.vue'),
+    },
 ]
 
 export const router = createRouter({
