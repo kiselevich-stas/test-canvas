@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
+import { watch, onMounted } from 'vue'
 import ConnectionsHeader from '@/components/connections/ConnectionsHeader.vue'
 import ConnectionsTabs from '@/components/connections/ConnectionsTabs.vue'
-import ConnectionsList from "@/components/connections/ConnectionsList.vue";
-import ConnectionsPendingBanner from "@/components/connections/ConnectionsPendingBanner.vue";
-import { useConnectionsStore} from "@/store/connectionsStore";
+import ConnectionsList from '@/components/connections/ConnectionsList.vue'
+import { useConnectionsStore } from '@/store/connectionsStore'
+import { useToastStore} from "@/store/toast";
+import BaseSection from '@/components/common/BaseSection.vue'
 
 const connectionsStore = useConnectionsStore()
+const toastStore = useToastStore()
 
 const {
   activeTab,
@@ -22,10 +25,52 @@ function handleTabChange(tab: 'all' | 'pending' | 'active') {
 function handleRequestConnection() {
   console.log('request connection')
 }
+
+function showPendingConnectionsToast(count: number): void {
+  if (count <= 0) {
+    return
+  }
+
+  toastStore.show({
+    type: 'warning',
+    title: `${count} запрос${getRequestsWordEnding(count)} ожида${count === 1 ? 'ет' : 'ют'} подтверждения`,
+    message: 'Новые связи становятся активными только после взаимного подтверждения',
+    duration: 500000,
+    closable: true,
+  })
+}
+function getRequestsWordEnding(count: number): string {
+  const lastTwoDigits = count % 100
+  const lastDigit = count % 10
+
+  if (lastTwoDigits >= 11 && lastTwoDigits <= 14) {
+    return 'ов'
+  }
+
+  if (lastDigit === 1) {
+    return ''
+  }
+
+  if (lastDigit >= 2 && lastDigit <= 4) {
+    return 'а'
+  }
+
+  return 'ов'
+}
+
+onMounted(() => {
+  showPendingConnectionsToast(pendingCount.value)
+})
+
+watch(pendingCount, (newValue, oldValue) => {
+  if (newValue > 0 && newValue !== oldValue) {
+    showPendingConnectionsToast(newValue)
+  }
+})
 </script>
 
 <template>
-  <section class="connections-page">
+  <BaseSection class="connections-page">
     <ConnectionsHeader @request="handleRequestConnection" />
 
     <div class="connections-page__toolbar">
@@ -39,25 +84,10 @@ function handleRequestConnection() {
     <div class="connections-page__content">
       <ConnectionsList :items="filteredItems" />
     </div>
-
-    <div class="connections-page__banner">
-      <ConnectionsPendingBanner :pending-count="pendingCount" />
-    </div>
-  </section>
+  </BaseSection>
 </template>
 
 <style scoped>
-.connections-page {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-  padding: 14px 16px 12px;
-  background: #f2f2f4;
-  border-radius: 16px;
-  overflow: hidden;
-}
-
 .connections-page__toolbar {
   display: flex;
   align-items: center;
@@ -69,10 +99,5 @@ function handleRequestConnection() {
   flex: 1;
   overflow: auto;
   padding-right: 4px;
-}
-
-.connections-page__banner {
-  display: flex;
-  justify-content: center;
 }
 </style>

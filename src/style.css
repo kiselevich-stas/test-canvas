@@ -20,6 +20,8 @@ button, input { font: inherit; }
   display: grid;
   grid-template-rows: auto 1fr;
 
+  max-height: 100vh;
+  padding: 8px;
   position: relative;
 }
 

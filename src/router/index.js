@@ -16,11 +16,11 @@ const routes = [
     //     name: 'scam-alerts',
     //     component: () => import('@/pages/ScamAlertsPage.vue'),
     // },
-    // {
-    //     path: '/statistics',
-    //     name: 'statistics',
-    //     component: () => import('@/pages/StatisticsPage.vue'),
-    // },
+    {
+        path: '/statistics',
+        name: 'statistics',
+        component: () => import('@/pages/StatisticsPage.vue'),
+    },
 ]
 
 export const router = createRouter({

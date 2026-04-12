@@ -114,11 +114,12 @@ function toggleSidebar() {
 <style lang="scss">
 .sidebar {
   width: 240px;
-  padding: 8px;
+  padding: 8px 0 8px 8px;
   border-radius: 12px;
   display: flex;
   flex-direction: column;
   transition: width 0.25s ease;
+  max-height: 100vh;
 }
 
 .sidebar.collapsed {
