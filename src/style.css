@@ -62,7 +62,7 @@ button, input { font: inherit; }
 .canvas-legend {
   position: absolute;
   left: 0;
-  bottom: 0;
+  bottom: 8px;
   z-index: 5;
   width: 180px;
   padding: 12px;

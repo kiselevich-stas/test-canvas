@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
 import UiDrawer from '@/components/ui/UiDrawer.vue'
+import UiButton from '@/components/ui/UiButton.vue'
 import { useNotificationStore } from '@/store/notificationStore.js'
+import NotificationsSkeleton from '@/components/notification/NotificationsSkeleton.vue'
 
-const props = defineProps<{
+defineProps<{
   modelValue: boolean
 }>()
 
@@ -11,19 +13,20 @@ const emit = defineEmits<{
   'update:modelValue': [value: boolean]
 }>()
 
-const notificationStore = useNotificationStore()
+const store = useNotificationStore()
 
 const {
   notifications,
   unreadCount,
-} = storeToRefs(notificationStore)
+  isLoading,
+} = storeToRefs(store)
 
-function handleClose(value) {
+function handleClose(value: boolean) {
   emit('update:modelValue', value)
 }
 
 function handleReadAll() {
-  notificationStore.markAllAsRead()
+  store.markAllAsRead()
 }
 </script>
 
@@ -40,34 +43,39 @@ function handleReadAll() {
         {{ unreadCount }} непрочитанных
       </div>
 
-      <div
-          v-for="item in notifications"
-          :key="item.id"
-          class="notification-item"
-          :class="{ 'notification-item--read': item.read }"
-      >
-        <div class="notification-item__title">
-          {{ item.title }}
-        </div>
+      <NotificationsSkeleton v-if="isLoading" />
 
-        <div class="notification-item__desc">
-          {{ item.description }}
-        </div>
+      <template v-else>
+        <div
+            v-for="item in notifications"
+            :key="item.id"
+            class="notification-item"
+            :class="{ 'notification-item--read': item.read }"
+        >
+          <div class="notification-item__title">
+            {{ item.title }}
+          </div>
 
-        <div class="notification-item__time">
-          {{ item.time }}
+          <div class="notification-item__desc">
+            {{ item.description }}
+          </div>
+
+          <div class="notification-item__time">
+            {{ item.time }}
+          </div>
         </div>
-      </div>
+      </template>
     </div>
 
     <template #footer>
-      <button
-          class="notifications__read-all"
+      <UiButton
+          variant="secondary"
+          block
           type="button"
           @click="handleReadAll"
       >
         Прочитать все
-      </button>
+      </UiButton>
     </template>
   </UiDrawer>
 </template>
@@ -111,14 +119,5 @@ function handleReadAll() {
   margin-top: 6px;
   font-size: 11px;
   color: #9ca3af;
-}
-
-.notifications__read-all {
-  width: 100%;
-  padding: 10px;
-  border-radius: 10px;
-  border: none;
-  background: #ffffff;
-  cursor: pointer;
 }
 </style>

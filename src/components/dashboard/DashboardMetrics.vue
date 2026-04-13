@@ -41,7 +41,6 @@ const { stats } = storeToRefs(graphStore)
   flex-wrap: wrap;
   gap: 10px;
   align-items: center;
-  padding: 8px 0;
 
   position: absolute;
   top: 0;
