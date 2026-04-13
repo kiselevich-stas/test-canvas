@@ -1,43 +1,30 @@
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
-import { fetchSettings, updateSettings} from "../api/settings.api";
-import { privacyOptions} from "../../public/mocks/settings.mock";
-import type {
-    NotificationSettingItem,
-    SettingsNotificationKey,
-    SettingsPrivacyValue,
-    UserSettingsData
-} from "../types/settings";
+import { fetchSettings, updateSettings } from '@/api/settings.api'
+import { privacyOptions as mockPrivacyOptions } from '../../public/mocks/settings.mock'
 
-function cloneSettings(data: UserSettingsData): UserSettingsData {
+function cloneSettings(data) {
     return {
         notifications: data.notifications.map((item) => ({ ...item })),
-        privacy: data.privacy,
+        privacy: data.privacy
     }
 }
 
 export const useSettingsStore = defineStore('settings', () => {
-    const settings = ref<UserSettingsData | null>(null)
-    const initialSettings = ref<UserSettingsData | null>(null)
+    const settings = ref(null)
+    const initialSettings = ref(null)
 
     const isLoading = ref(false)
     const isSaving = ref(false)
 
-    const notifications = computed<NotificationSettingItem[]>(() => {
+    const privacyOptions = ref(mockPrivacyOptions)
+
+    const notifications = computed(() => {
         return settings.value?.notifications ?? []
     })
 
-    const privacy = computed<SettingsPrivacyValue>({
-        get() {
-            return settings.value?.privacy ?? 'direct_partners'
-        },
-        set(value) {
-            if (!settings.value) {
-                return
-            }
-
-            settings.value.privacy = value
-        },
+    const privacy = computed(() => {
+        return settings.value?.privacy ?? 'direct_partners'
     })
 
     const hasChanges = computed(() => {
@@ -48,7 +35,12 @@ export const useSettingsStore = defineStore('settings', () => {
         return JSON.stringify(settings.value) !== JSON.stringify(initialSettings.value)
     })
 
-    function setNotificationEnabled(key: SettingsNotificationKey, enabled: boolean): void {
+    function setSettings(data) {
+        settings.value = cloneSettings(data)
+        initialSettings.value = cloneSettings(data)
+    }
+
+    function setNotificationEnabled(key, enabled) {
         if (!settings.value) {
             return
         }
@@ -62,11 +54,15 @@ export const useSettingsStore = defineStore('settings', () => {
         target.enabled = enabled
     }
 
-    function setPrivacy(value: SettingsPrivacyValue): void {
-        privacy.value = value
+    function setPrivacy(value) {
+        if (!settings.value) {
+            return
+        }
+
+        settings.value.privacy = value
     }
 
-    function resetChanges(): void {
+    function resetChanges() {
         if (!initialSettings.value) {
             return
         }
@@ -74,19 +70,18 @@ export const useSettingsStore = defineStore('settings', () => {
         settings.value = cloneSettings(initialSettings.value)
     }
 
-    async function loadSettings(): Promise<void> {
+    async function loadSettings() {
         isLoading.value = true
 
         try {
             const response = await fetchSettings()
-            settings.value = cloneSettings(response)
-            initialSettings.value = cloneSettings(response)
+            setSettings(response)
         } finally {
             isLoading.value = false
         }
     }
 
-    async function saveSettings(): Promise<void> {
+    async function saveSettings() {
         if (!settings.value) {
             return
         }
@@ -95,8 +90,7 @@ export const useSettingsStore = defineStore('settings', () => {
 
         try {
             const response = await updateSettings(settings.value)
-            settings.value = cloneSettings(response)
-            initialSettings.value = cloneSettings(response)
+            setSettings(response)
         } finally {
             isSaving.value = false
         }
@@ -104,18 +98,18 @@ export const useSettingsStore = defineStore('settings', () => {
 
     return {
         settings,
+        initialSettings,
         notifications,
         privacy,
         privacyOptions,
-
         isLoading,
         isSaving,
         hasChanges,
-
+        setSettings,
         setNotificationEnabled,
         setPrivacy,
         resetChanges,
         loadSettings,
-        saveSettings,
+        saveSettings
     }
 })

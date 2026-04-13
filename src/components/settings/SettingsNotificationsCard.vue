@@ -1,18 +1,16 @@
-<script setup lang="ts">
+<script setup>
 import SettingsNotificationRow from "@/components/settings/SettingsNotificationRow.vue";
-import type { NotificationSettingItem, SettingsNotificationKey} from "@/types/settings";
 
-interface Props {
-  items: NotificationSettingItem[]
-}
+defineProps({
+  items: {
+    type: Array,
+    default: () => []
+  }
+})
 
-defineProps<Props>()
+const emit = defineEmits(['toggle'])
 
-const emit = defineEmits<{
-  toggle: [key: SettingsNotificationKey, value: boolean]
-}>()
-
-function handleToggle(key: SettingsNotificationKey, value: boolean): void {
+function handleToggle(key, value) {
   emit('toggle', key, value)
 }
 </script>
@@ -42,10 +40,6 @@ function handleToggle(key: SettingsNotificationKey, value: boolean): void {
 
 <style scoped lang="scss">
 .settings-card {
-  padding: 14px;
-  border-radius: 16px;
-  background: #f3f3f4;
-  border: 1px solid #ececf0;
 }
 
 .settings-card__title {

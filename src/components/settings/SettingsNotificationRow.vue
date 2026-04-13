@@ -1,20 +1,22 @@
-<script setup lang="ts">
-interface Props {
-  title: string
-  description: string
-  modelValue: boolean
-}
+<script setup>
+import BaseSwitch from "@/components/common/BaseSwitch.vue";
 
-defineProps<Props>()
+defineProps({
+  title: {
+    type: String,
+    required: true
+  },
+  description: {
+    type: String,
+    required: true
+  },
+  modelValue: {
+    type: Boolean,
+    default: false
+  }
+})
 
-const emit = defineEmits<{
-  'update:modelValue': [value: boolean]
-}>()
-
-function handleChange(event: Event): void {
-  const target = event.target as HTMLInputElement
-  emit('update:modelValue', target.checked)
-}
+defineEmits(['update:modelValue'])
 </script>
 
 <template>
@@ -29,16 +31,10 @@ function handleChange(event: Event): void {
       </div>
     </div>
 
-    <label class="settings-notification-row__switch">
-      <input
-          class="settings-notification-row__input"
-          type="checkbox"
-          :checked="modelValue"
-          @change="handleChange"
-      >
-
-      <span class="settings-notification-row__slider" />
-    </label>
+    <BaseSwitch
+        :model-value="modelValue"
+        @update:modelValue="$emit('update:modelValue', $event)"
+    />
   </div>
 </template>
 
@@ -48,11 +44,10 @@ function handleChange(event: Event): void {
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  min-height: 56px;
+  min-height: 42px;
   padding: 8px 10px;
-  border-radius: 12px;
+  border-radius: 10px;
   background: #f7f7f8;
-  border: 1px solid #ececf0;
 }
 
 .settings-notification-row__content {
@@ -60,60 +55,16 @@ function handleChange(event: Event): void {
 }
 
 .settings-notification-row__title {
-  color: #1f1f24;
   font-size: 14px;
-  font-weight: 600;
   line-height: 18px;
+  font-weight: 500;
+  color: #1f1f24;
 }
 
 .settings-notification-row__description {
   margin-top: 2px;
-  color: #9c9ca4;
   font-size: 12px;
   line-height: 15px;
-}
-
-.settings-notification-row__switch {
-  position: relative;
-  flex: 0 0 auto;
-  width: 38px;
-  height: 22px;
-  cursor: pointer;
-}
-
-.settings-notification-row__input {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  pointer-events: none;
-}
-
-.settings-notification-row__slider {
-  position: absolute;
-  inset: 0;
-  border-radius: 999px;
-  background: #dddddf;
-  transition: background-color 0.2s ease;
-}
-
-.settings-notification-row__slider::after {
-  content: '';
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: #ffffff;
-  box-shadow: 0 1px 3px rgba(31, 31, 36, 0.16);
-  transition: transform 0.2s ease;
-}
-
-.settings-notification-row__input:checked + .settings-notification-row__slider {
-  background: #1677ff;
-}
-
-.settings-notification-row__input:checked + .settings-notification-row__slider::after {
-  transform: translateX(16px);
+  color: #9a9aa2;
 }
 </style>

@@ -1,17 +1,18 @@
-<script setup lang="ts">
-import SettingsPrivacyOption from "@/components/settings/SettingsPrivacyOption.vue";
-import type { PrivacyOptionItem, SettingsPrivacyValue} from "@/types/settings";
+<script setup>
+import SettingsPrivacyOption from '@/components/settings/SettingsPrivacyOption.vue'
 
-interface Props {
-  modelValue: SettingsPrivacyValue
-  options: PrivacyOptionItem[]
-}
+defineProps({
+  modelValue: {
+    type: String,
+    default: ''
+  },
+  options: {
+    type: Array,
+    default: () => []
+  }
+})
 
-defineProps<Props>()
-
-defineEmits<{
-  'update:modelValue': [value: SettingsPrivacyValue]
-}>()
+defineEmits(['update:modelValue'])
 </script>
 
 <template>
@@ -24,7 +25,7 @@ defineEmits<{
       Кто может видеть ваш профиль
     </div>
 
-    <div class="settings-card__options">
+    <div class="settings-card__list">
       <SettingsPrivacyOption
           v-for="option in options"
           :key="option.value"
@@ -39,30 +40,26 @@ defineEmits<{
 
 <style scoped lang="scss">
 .settings-card {
-  padding: 14px;
-  border-radius: 16px;
-  background: #f3f3f4;
-  border: 1px solid #ececf0;
 }
 
 .settings-card__title {
-  color: #1f1f24;
   font-size: 15px;
   font-weight: 700;
   line-height: 18px;
+  color: #1f1f24;
 }
 
 .settings-card__description {
   margin-top: 4px;
-  color: #9b9ca4;
   font-size: 12px;
   line-height: 15px;
+  color: #9b9ca4;
 }
 
-.settings-card__options {
+.settings-card__list {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 12px;
   margin-top: 14px;
 }
 </style>
