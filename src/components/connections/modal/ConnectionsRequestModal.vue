@@ -169,6 +169,10 @@ watch(
   align-items: center;
     border-radius: 50%;
   justify-content: center;
+  img{
+    width: 16px;
+    height: 16px;
+  }
   &:hover{
     background: #dcd7d7;
   }

@@ -408,7 +408,7 @@ onBeforeUnmount(() => {
 })
 
 watch(
-    () => graphStore.filters,
+    graph,
     () => {
       refreshGraph()
     },

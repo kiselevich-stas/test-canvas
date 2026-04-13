@@ -4,6 +4,9 @@ import {useRoute} from 'vue-router'
 import {useGraphStore} from '@/store/graphStore.js'
 import {useNotificationStore} from '@/store/notificationStore.js'
 
+import UiButton from '@/components/ui/UiButton.vue'
+import AddParticipantModal from "@/components/modal/AddParticipantModal.vue";
+
 import SidebarSearch from './SidebarSearch.vue'
 import NotificationsModal from '@/components/notification/NotificationsModal.vue'
 
@@ -18,6 +21,16 @@ const search = computed({
   get: () => graphStore.filters.search,
   set: (value) => graphStore.setSearch(value),
 })
+
+const isAddParticipantModalOpen = computed(() => graphStore.isAddParticipantModalOpen)
+
+function openAddParticipantModal() {
+  graphStore.openAddParticipantModal()
+}
+
+function closeAddParticipantModal() {
+  graphStore.closeAddParticipantModal()
+}
 
 const menuItems = [
   {
@@ -136,6 +149,22 @@ function isRouteActive(path) {
           <img :src="item.icon" :alt="item.alt">
           <span v-if="!isCollapsed">{{ item.label }}</span>
         </router-link>
+        <div v-if="!isCollapsed" class="sidebar-actions">
+          <UiButton
+              variant="primary"
+              block
+              type="button"
+              icon="plus-sign-circle"
+              @click="openAddParticipantModal"
+          >
+            Добавить участника
+          </UiButton>
+        </div>
+
+        <AddParticipantModal
+            :model-value="isAddParticipantModalOpen"
+            @update:modelValue="closeAddParticipantModal"
+        />
       </div>
     </div>
 
