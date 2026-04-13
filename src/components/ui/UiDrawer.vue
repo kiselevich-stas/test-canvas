@@ -14,6 +14,12 @@ const props = defineProps({
     type: String,
     default: '360px',
   },
+
+  overlay: {
+    type: Boolean,
+    default: false,
+  },
+
   closeOnEsc: {
     type: Boolean,
     default: true,
@@ -73,17 +79,30 @@ onBeforeUnmount(() => {
   <Teleport to="body">
     <transition name="ui-drawer-fade">
       <div v-if="modelValue">
+        <div
+            v-if="overlay"
+            class="ui-drawer-backdrop"
+            @click="handleBackdropClick"
+        />
+
         <transition name="ui-drawer-slide">
           <aside class="ui-drawer" :style="drawerStyle" @click.stop>
             <header class="ui-drawer__header">
               <div class="ui-drawer__head">
                 <slot name="header">
-                  <div v-if="title" class="ui-drawer__title">{{ title }}</div>
+                  <div v-if="title" class="ui-drawer__title">
+                    {{ title }}
+                  </div>
                 </slot>
               </div>
 
-              <button class="ui-drawer__close" type="button" aria-label="Закрыть" @click="close">
-                ×
+              <button
+                  class="ui-drawer__close"
+                  type="button"
+                  aria-label="Закрыть"
+                  @click="close"
+              >
+                <img src="/assets/icons/del.svg" alt="close">
               </button>
             </header>
 
@@ -96,17 +115,20 @@ onBeforeUnmount(() => {
             </footer>
           </aside>
         </transition>
+
       </div>
     </transition>
   </Teleport>
 </template>
+
 <style scoped>
+/* 👇 overlay на весь экран */
 .ui-drawer-backdrop {
   position: fixed;
   inset: 0;
   z-index: 50;
-  background: transparent;
-  backdrop-filter: none;
+  background: rgba(17, 24, 39, 0.16);
+  backdrop-filter: blur(2px);
 }
 
 .ui-drawer {
@@ -116,13 +138,14 @@ onBeforeUnmount(() => {
   bottom: 10px;
   display: grid;
   grid-template-rows: auto 1fr auto;
-  background: #ebebee;
-  border: 0;
-  border-radius: 28px;
-  box-shadow: none;
-  overflow: hidden;
+
+  width: min(var(--ui-drawer-width), calc(100vw - 20px));
   max-width: 343px;
-  width: 100%;
+
+  background: #ebebee;
+  border-radius: 28px;
+  overflow: hidden;
+  z-index: 51; /* выше overlay */
 }
 
 .ui-drawer__header {
@@ -133,7 +156,6 @@ onBeforeUnmount(() => {
 }
 
 .ui-drawer__head {
-  min-width: 0;
   width: 100%;
 }
 
@@ -144,33 +166,33 @@ onBeforeUnmount(() => {
 }
 
 .ui-drawer__close {
-  flex: none;
-  width: 40px;
-  height: 40px;
-  border: 0;
-  border-radius: 14px;
-  background: #e2e2e7;
-  color: #9ca3af;
-  font: inherit;
-  font-size: 28px;
-  line-height: 1;
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  outline: none;
+  box-shadow: none;
+  background: transparent;
+  padding: 0;
+  height: 30px;
+  width: 30px;
+  position: relative;
+  top: -4px;
+  transition: 0.3s linear;
   cursor: pointer;
-}
-
-.ui-drawer__close:hover {
-  background: #d9d9df;
-  color: #6b7280;
+  border-radius: 50%;
+  &:hover{
+    background: #dcd7d7;
+  }
 }
 
 .ui-drawer__content {
-  min-height: 0;
   overflow: auto;
   padding: 0 16px 16px;
 }
 
 .ui-drawer__footer {
-  display: flex;
-  gap: 10px;
   padding: 12px 16px 18px;
   background: #ebebee;
 }
@@ -192,24 +214,4 @@ onBeforeUnmount(() => {
   opacity: 0;
   transform: translateX(18px);
 }
-
-
-/* Chrome, Edge, Safari */
-.ui-drawer__content::-webkit-scrollbar {
-  width: 6px;
-}
-
-.ui-drawer__content::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.ui-drawer__content::-webkit-scrollbar-thumb {
-  background: #cfcfd6;
-  border-radius: 999px;
-}
-
-.ui-drawer__content::-webkit-scrollbar-thumb:hover {
-  background: #b9bac3;
-}
-
 </style>

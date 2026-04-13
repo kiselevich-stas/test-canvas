@@ -100,8 +100,8 @@ function goToPage(page: number): void {
 }
 
 .connections-pagination__page--active {
-  border-color: #1677ff;
-  background: #1677ff;
+  border-color: #007BFF;
+  background: #007BFF;
   color: #ffffff;
 }
 </style>

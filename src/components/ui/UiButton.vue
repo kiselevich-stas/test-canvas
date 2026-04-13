@@ -140,14 +140,14 @@ function handleClick(event: MouseEvent) {
 }
 
 .ui-button--primary {
-  background: #1f7cff;
-  border-color: #1f7cff;
+  background: #007BFF;
+  border-color: #007BFF;
   color: #ffffff;
 }
 
 .ui-button--primary:hover:not(:disabled) {
-  background: #176ee6;
-  border-color: #176ee6;
+  background: #007BFF;
+  border-color: #007BFF;
 }
 
 .ui-button--secondary {

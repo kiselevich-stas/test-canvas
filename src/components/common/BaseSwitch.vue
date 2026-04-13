@@ -41,16 +41,16 @@ function handleChange(event) {
   position: relative;
   display: inline-flex;
   align-items: center;
-  width: 40px;
+  width: 50px;
   height: 22px;
+  flex-shrink: 0;
   cursor: pointer;
   user-select: none;
-  flex-shrink: 0;
 }
 
 .base-switch--disabled {
+  opacity: 0.5;
   cursor: not-allowed;
-  opacity: 0.6;
 }
 
 .base-switch__input {
@@ -63,37 +63,34 @@ function handleChange(event) {
 
 .base-switch__track {
   position: relative;
-  width: 40px;
+  width: 50px;
   height: 22px;
-  border-radius: 999px;
-  background: #f3f3f4;
-  border: 1px solid #d7d7db;
-  transition: background-color 0.2s ease, border-color 0.2s ease;
-  box-sizing: border-box;
+  border-radius: 100px;
+  background: #d9d9d9;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .base-switch__thumb {
   position: absolute;
-  top: 1px;
-  left: 1px;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: #cfcfd4;
-  transition: transform 0.2s ease, background-color 0.2s ease;
+  top: 1.5px;
+  left: 1.5px;
+  width: 30px;
+  height: 19px;
+  border-radius: 78px;
+  background: #ffffff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.16);
+  transition: transform 0.2s ease;
 }
 
 .base-switch__input:checked + .base-switch__track {
-  background: #eaf3ff;
-  border-color: #3b82f6;
+  background: #007BFF;
 }
 
 .base-switch__input:checked + .base-switch__track .base-switch__thumb {
-  transform: translateX(18px);
-  background: #1677ff;
+  transform: translateX(17px);
 }
 
 .base-switch__input:focus-visible + .base-switch__track {
-  box-shadow: 0 0 0 3px rgba(22, 119, 255, 0.12);
+  box-shadow: 0 0 0 3px rgba(24, 119, 242, 0.14);
 }
 </style>

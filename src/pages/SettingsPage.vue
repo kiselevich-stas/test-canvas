@@ -9,8 +9,8 @@ import SettingsNotificationsSkeleton from '@/components/settings/SettingsNotific
 import SettingsPrivacySkeleton from '@/components/settings/SettingsPrivacySkeleton.vue'
 
 import BaseSection from '@/components/common/BaseSection.vue'
-import StatisticsHeader from '@/components/statistics/StatisticsHeader.vue'
-import BaseCard from "@/components/common/BaseCard.vue";
+import BaseCard from '@/components/common/BaseCard.vue'
+import SettingsHeader from '@/components/settings/SettingsHeader.vue'
 
 const settingsStore = useSettingsStore()
 
@@ -19,6 +19,8 @@ const {
   privacy,
   privacyOptions,
   isLoading,
+  isSaving,
+  hasChanges,
 } = storeToRefs(settingsStore)
 
 onMounted(() => {
@@ -32,36 +34,47 @@ function handleToggle(key, value) {
 function handlePrivacyChange(value) {
   settingsStore.setPrivacy(value)
 }
+
+function handleSave() {
+  settingsStore.saveSettings()
+}
 </script>
 
 <template>
   <BaseSection class="settings-page">
-    <StatisticsHeader/>
+    <SettingsHeader
+        title="Настройки"
+        subtitle="Управление параметрами платформы"
+        :save-disabled="isLoading || !hasChanges"
+        :is-saving="isSaving"
+        @save="handleSave"
+    />
 
     <template v-if="isLoading">
-     <BaseCard>
-       <SettingsNotificationsSkeleton/>
-     </BaseCard>
-   <BaseCard>
-     <SettingsPrivacySkeleton/>
-   </BaseCard>
+      <BaseCard>
+        <SettingsNotificationsSkeleton />
+      </BaseCard>
+
+      <BaseCard>
+        <SettingsPrivacySkeleton />
+      </BaseCard>
     </template>
 
     <template v-else>
-    <BaseCard>
-      <SettingsNotificationsCard
-          :items="notifications"
-          @toggle="handleToggle"
-      />
-    </BaseCard>
+      <BaseCard>
+        <SettingsNotificationsCard
+            :items="notifications"
+            @toggle="handleToggle"
+        />
+      </BaseCard>
 
-    <BaseCard>
-      <SettingsPrivacyCard
-          :model-value="privacy"
-          :options="privacyOptions"
-          @update:modelValue="handlePrivacyChange"
-      />
-    </BaseCard>
+      <BaseCard>
+        <SettingsPrivacyCard
+            :model-value="privacy"
+            :options="privacyOptions"
+            @update:modelValue="handlePrivacyChange"
+        />
+      </BaseCard>
     </template>
   </BaseSection>
 </template>

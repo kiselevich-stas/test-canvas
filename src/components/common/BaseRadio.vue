@@ -86,13 +86,13 @@ function handleChange() {
   position: absolute;
   inset: 3px;
   border-radius: 50%;
-  background: #1677ff;
+  background: #007BFF;
   transform: scale(0);
   transition: transform 0.2s ease;
 }
 
 .base-radio__input:checked + .base-radio__control {
-  border-color: #1677ff;
+  border-color: #007BFF;
 }
 
 .base-radio__input:checked + .base-radio__control::after {

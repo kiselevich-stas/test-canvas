@@ -1,11 +1,18 @@
 <script setup>
-import { computed } from 'vue'
-import { useGraphStore } from '../../store/graphStore'
+import {computed} from 'vue'
+import {useRoute} from 'vue-router'
+import {useGraphStore} from '@/store/graphStore.js'
+import {useNotificationStore} from '@/store/notificationStore.js'
+
 import SidebarSearch from './SidebarSearch.vue'
+import NotificationsModal from '@/components/notification/NotificationsModal.vue'
 
 const graphStore = useGraphStore()
+const notificationStore = useNotificationStore()
+const route = useRoute()
 
 const isCollapsed = computed(() => graphStore.sidebarCollapsed)
+const isNotificationsOpen = computed(() => notificationStore.isOpen)
 
 const search = computed({
   get: () => graphStore.filters.search,
@@ -41,11 +48,6 @@ const menuItems = [
 
 const footerItems = [
   {
-    label: 'Уведомления',
-    icon: '/assets/icons/notification.svg',
-    alt: 'notification-icon',
-  },
-  {
     label: 'Настройки',
     to: '/settings',
     icon: '/assets/icons/setting.svg',
@@ -53,6 +55,7 @@ const footerItems = [
   },
   {
     label: 'Telegram',
+    to: '/telegram',
     icon: '/assets/icons/telegram.svg',
     alt: 'telegram-icon',
   },
@@ -60,6 +63,22 @@ const footerItems = [
 
 function toggleSidebar() {
   graphStore.toggleSidebar()
+}
+
+function openNotifications() {
+  notificationStore.open()
+}
+
+function closeNotifications() {
+  notificationStore.close()
+}
+
+function isRouteActive(path) {
+  if (notificationStore.isOpen) {
+    return false
+  }
+
+  return route.path === path
 }
 </script>
 
@@ -89,8 +108,7 @@ function toggleSidebar() {
             :key="item.to"
             :to="item.to"
             class="menu-item"
-            active-class="menu-item--active"
-            exact-active-class="menu-item--active"
+            :class="{ 'menu-item--active': isRouteActive(item.to) }"
         >
           <img :src="item.icon" :alt="item.alt">
           <span v-if="!isCollapsed">{{ item.label }}</span>
@@ -98,18 +116,33 @@ function toggleSidebar() {
       </nav>
 
       <div class="sidebar-footer">
+        <button
+            type="button"
+            class="menu-item menu-item-button"
+            :class="{ 'menu-item--active': isNotificationsOpen }"
+            @click="openNotifications"
+        >
+          <img src="/assets/icons/notification.svg" alt="notification-icon">
+          <span v-if="!isCollapsed">Уведомления</span>
+        </button>
+
         <router-link
             v-for="item in footerItems"
-            :key="item.label"
-            class="menu-item menu-item--ghost"
-            type="button"
+            :key="item.to"
             :to="item.to"
+            class="menu-item"
+            :class="{ 'menu-item--active': isRouteActive(item.to) }"
         >
           <img :src="item.icon" :alt="item.alt">
           <span v-if="!isCollapsed">{{ item.label }}</span>
         </router-link>
       </div>
     </div>
+
+    <NotificationsModal
+        :model-value="isNotificationsOpen"
+        @update:modelValue="closeNotifications"
+    />
   </aside>
 </template>
 
@@ -187,6 +220,7 @@ function toggleSidebar() {
 }
 
 .menu-item {
+  width: 100%;
   padding: 8px 10px;
   border: none;
   border-radius: 10px;
@@ -206,6 +240,10 @@ function toggleSidebar() {
     vertical-align: middle;
     color: #838383;
   }
+}
+
+.menu-item-button {
+  font: inherit;
 }
 
 .menu-item--active {

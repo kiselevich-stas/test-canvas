@@ -72,7 +72,7 @@ const rows = [
   display: flex;
   align-items: center;
   justify-content: space-between;
-  min-height: 62px;
+  max-height: 51px;
   padding: 14px 16px;
   border-radius: 14px;
   background: #fbfbfc;
