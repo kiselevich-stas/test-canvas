@@ -7,8 +7,6 @@ defineProps<{
 
 <template>
   <section class="details-card">
-    <div class="details-card__title">Описание</div>
-
     <p class="details-description">
       {{ description || 'Описание отсутствует.' }}
     </p>
@@ -23,9 +21,6 @@ defineProps<{
 
 <style scoped>
 .details-card {
-  background: #ffffff;
-  border-radius: 20px;
-  padding: 16px;
 }
 
 .details-card__title {
@@ -36,14 +31,14 @@ defineProps<{
 }
 
 .details-description {
-  margin: 14px 0 0;
+  margin: 0 0;
   color: #5f6b7d;
   font-size: 13px;
   line-height: 1.45;
 }
 
 .details-contacts {
-  margin-top: 14px;
+  margin-top: 8px;
   display: grid;
   gap: 10px;
 }

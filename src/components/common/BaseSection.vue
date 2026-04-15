@@ -13,7 +13,7 @@
   height: 100%;
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 16px;
   padding: 14px 16px 12px;
   background: #f2f2f4;
   border-radius: 16px;

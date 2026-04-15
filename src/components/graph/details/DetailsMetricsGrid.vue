@@ -38,10 +38,9 @@ defineProps<{
 }
 
 .details-mini-card {
-  min-height: 90px;
-  padding: 16px;
+  padding: 10px;
   background: #ffffff;
-  border-radius: 20px;
+  border-radius: 8px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -64,10 +63,10 @@ defineProps<{
 }
 
 .details-mini-card__value {
-  margin-top: 14px;
+  margin-top: 6px;
   color: #111827;
-  font-size: 28px;
-  font-weight: 700;
-  line-height: 1;
+  font-size: 16px;
+  line-height: 1.3;
+  font-weight: 500;
 }
 </style>

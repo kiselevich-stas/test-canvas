@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@vueuse/core": "^14.2.1",
     "cytoscape": "^3.33.1",
     "echarts": "^6.0.0",
     "pinia": "^3.0.3",

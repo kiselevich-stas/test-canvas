@@ -30,8 +30,8 @@ defineProps<{
 <style scoped>
 .details-card {
   background: #ffffff;
-  border-radius: 20px;
-  padding: 16px;
+  border-radius: 8px;
+  padding: 8px;
 }
 
 .details-card__row {
@@ -43,8 +43,11 @@ defineProps<{
 
 .details-card__label {
   color: #475467;
-  font-size: 14px;
   line-height: 1.2;
+
+  font-weight: 400;
+  font-size: 13px;
+
 }
 
 .details-positive {
@@ -54,11 +57,14 @@ defineProps<{
 }
 
 .details-reputation-value {
+  font-size: 14px;
+  leading-trim: NONE;
+  line-height: 1.2;
+
+
   margin-top: 12px;
   color: #111827;
-  font-size: 18px;
   font-weight: 700;
-  line-height: 1;
 }
 
 .details-progress {

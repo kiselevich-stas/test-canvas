@@ -36,7 +36,6 @@ const emit = defineEmits<{
 .details-tabs {
   display: flex;
   gap: 8px;
-  margin-bottom: 14px;
 }
 
 .details-tab {

@@ -33,6 +33,7 @@ defineProps<{
 
 <style scoped>
 .details-stack {
+  margin-top: 12px;
   display: grid;
   gap: 12px;
 }

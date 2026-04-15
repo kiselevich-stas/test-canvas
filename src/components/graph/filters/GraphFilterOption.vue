@@ -103,10 +103,10 @@ const props = defineProps({
 <style scoped>
 .graph-filter-option {
   width: 100%;
-  min-height: 38px;
+  min-height: 36px;
   padding: 0 12px;
   border: 0;
-  border-radius: 12px;
+  border-radius: 8px;
   background: transparent;
   display: flex;
   align-items: center;
@@ -114,6 +114,10 @@ const props = defineProps({
   cursor: pointer;
   text-align: left;
   color: #7b7b85;
+  transition: 0.3s linear;
+  &:hover{
+    background: #e2e2e2;
+  }
 }
 
 .graph-filter-option--active {

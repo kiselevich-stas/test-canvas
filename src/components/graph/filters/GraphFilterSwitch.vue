@@ -20,17 +20,7 @@ function toggle() {
 <template>
   <button type="button" class="graph-filter-switch" @click="toggle">
     <div class="graph-filter-switch__left">
-      <svg viewBox="0 0 20 20" aria-hidden="true" class="graph-filter-switch__icon">
-        <path
-            d="M10 3.5L17 15.5H3L10 3.5Z"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.4"
-            stroke-linejoin="round"
-        />
-        <path d="M10 7.2V10.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" />
-        <circle cx="10" cy="13" r="0.8" fill="currentColor" />
-      </svg>
+      <img src="/assets/icons/spam.svg" alt="">
 
       <span class="graph-filter-switch__label">{{ label }}</span>
     </div>
@@ -46,10 +36,10 @@ function toggle() {
 
 <style scoped>
 .graph-filter-switch {
+  min-height: 36px;
   width: 100%;
   border: 0;
   background: transparent;
-  padding: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;

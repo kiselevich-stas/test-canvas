@@ -44,15 +44,6 @@ function resetFilters() {
 
 <template>
   <div class="graph-filters-panel">
-    <button
-        type="button"
-        class="graph-filters-panel__close"
-        aria-label="Закрыть фильтры"
-        @click="emit('close')"
-    >
-      ×
-    </button>
-
     <div class="graph-filters-panel__card">
       <div class="graph-filters-panel__section">
         <div class="graph-filters-panel__title">Тип участника</div>
@@ -144,16 +135,17 @@ function resetFilters() {
 
 .graph-filters-panel__card {
   margin-top: 42px;
-  background: #f4f4f6;
-  border-radius: 20px;
-  padding: 14px 14px 16px;
+  background: #F1F2F4CC;
+  border-radius: 12px;
+  padding: 8px;
   box-shadow: 0 2px 14px rgba(15, 23, 42, 0.04);
+  backdrop-filter: blur(200px);
 }
 
 .graph-filters-panel__section {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 4px;
 }
 
 .graph-filters-panel__title {
@@ -176,6 +168,7 @@ function resetFilters() {
 
 .graph-filters-panel__reset {
   border: 0;
+   min-height: 36px;
   background: transparent;
   color: #111827;
   font-size: 15px;
@@ -184,5 +177,10 @@ function resetFilters() {
   cursor: pointer;
   padding: 0;
   text-align: center;
+  border-radius: 8px;
+  transition: 0.3s linear;
+  &:hover{
+    background: #e2e2e2;
+  }
 }
 </style>

@@ -11,11 +11,14 @@ const routes = [
         name: 'connections',
         component: () => import('@/pages/ConnectionsPage.vue'),
     },
-    // {
-    //     path: '/scam-alerts',
-    //     name: 'scam-alerts',
-    //     component: () => import('@/pages/ScamAlertsPage.vue'),
-    // },
+    {
+      path: '/scam-alerts',
+      name: 'scam-alerts',
+      component: () => import('@/pages/ScamAlertsPage.vue'),
+      meta: {
+        layout: 'dashboard',
+      },
+    },
     {
         path: '/statistics',
         name: 'statistics',
@@ -25,6 +28,14 @@ const routes = [
         path: '/settings',
         name: 'settings',
         component: () => import('@/pages/SettingsPage.vue'),
+    },
+    {
+        path: '/login',
+        name: 'login',
+        component: () => import('@/pages/LoginPage.vue'),
+        meta: {
+            layout: 'login',
+        },
     },
 ]
 

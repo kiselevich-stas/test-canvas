@@ -187,7 +187,10 @@ function isRouteActive(path) {
 }
 
 .sidebar.collapsed {
-  width: 72px;
+  width: 64px;
+  .sidebar-header {
+    justify-content: center;
+  }
 }
 
 .sidebar-header {

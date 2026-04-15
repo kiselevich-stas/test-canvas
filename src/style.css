@@ -10,17 +10,18 @@ body { background: #dcdcdc; color: #2d3748; }
 button, input { font: inherit; }
 
 .dashboard-layout {
+  overflow-x: hidden;
   display: grid;
-  grid-template-columns: auto 1fr;
+  grid-template-columns: auto minmax(0, 1fr);
   min-height: 100vh;
   background: #dcdcdc;
 }
 
 .dashboard-main {
-  /*display: grid;*/
-  /*grid-template-rows: auto 1fr;*/
   display: flex;
   flex-direction: column;
+  min-width: 0;
+  min-height: 0;
   max-height: 100vh;
   padding: 8px;
   position: relative;
