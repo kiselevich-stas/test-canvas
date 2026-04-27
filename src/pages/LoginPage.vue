@@ -1,30 +1,5 @@
-<script setup>
-import { computed, reactive } from 'vue'
-import UiButton from '@/components/ui/UiButton.vue'
-import UiInput from '@/components/ui/UiInput.vue'
-import UiCheckbox from '@/components/ui/UiCheckbox.vue'
-
-const form = reactive({
-  login: '',
-  password: '',
-  remember: true,
-})
-
-const isFormFilled = computed(() => {
-  return Boolean(form.login.trim() && form.password.trim())
-})
-
-function handleSubmit() {
-  if (!isFormFilled.value) {
-    return
-  }
-
-  console.log('login payload', {
-    login: form.login,
-    password: form.password,
-    remember: form.remember,
-  })
-}
+<script setup lang="ts">
+import LoginForm from '@/components/auth/LoginForm.vue'
 </script>
 
 <template>
@@ -46,35 +21,7 @@ function handleSubmit() {
         к панели управления
       </p>
 
-      <div class="login-page__form">
-        <UiInput
-            v-model="form.login"
-            label="Логин"
-            placeholder="Введите логин"
-        />
-
-        <UiInput
-            v-model="form.password"
-            type="password"
-            label="Пароль"
-            placeholder="Введите пароль"
-        />
-
-        <UiCheckbox
-            v-model="form.remember"
-            label="Запомнить меня"
-        />
-
-        <UiButton
-            variant="primary"
-            block
-            type="button"
-            :disabled="!isFormFilled"
-            @click="handleSubmit"
-        >
-          Войти
-        </UiButton>
-      </div>
+      <LoginForm />
     </div>
   </div>
 </template>
@@ -121,16 +68,8 @@ function handleSubmit() {
   font-weight: 400;
   font-size: 14px;
   line-height: 1.3;
-  letter-spacing: -4%;
+  letter-spacing: -0.04em;
   text-align: center;
-  vertical-align: middle;
   color: #838383;
-
-}
-
-.login-page__form {
-  display: grid;
-  gap: 14px;
-  margin-top: 24px;
 }
 </style>
