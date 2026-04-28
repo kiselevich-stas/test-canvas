@@ -64,26 +64,26 @@ export const router = createRouter({
     routes,
 })
 
-router.beforeEach((to) => {
-    const authStore = useAuthStore()
-
-    const isAuthorized = authStore.isAuth.value
-    const requiresAuth = to.meta.requiresAuth
-
-    if (requiresAuth && !isAuthorized) {
-        return {
-            name: 'login',
-            query: {
-                redirect: to.fullPath,
-            },
-        }
-    }
-
-    if (to.name === 'login' && isAuthorized) {
-        return {
-            name: 'network',
-        }
-    }
-
-    return true
-})
+// router.beforeEach((to) => {
+//     const authStore = useAuthStore()
+//
+//     const isAuthorized = authStore.isAuth.value
+//     const requiresAuth = to.meta.requiresAuth
+//
+//     if (requiresAuth && !isAuthorized) {
+//         return {
+//             name: 'login',
+//             query: {
+//                 redirect: to.fullPath,
+//             },
+//         }
+//     }
+//
+//     if (to.name === 'login' && isAuthorized) {
+//         return {
+//             name: 'network',
+//         }
+//     }
+//
+//     return true
+// })
